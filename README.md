@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fandoghpaas/bestoon.svg?branch=master)](https://travis-ci.org/fandoghpaas/bestoon)
+
 
 # Bestoon
 
