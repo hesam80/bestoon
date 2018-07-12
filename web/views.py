@@ -6,8 +6,6 @@ from datetime import datetime
 from django.core import serializers
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
 from django.db.models import Sum, Count
 from django.http import JsonResponse
 from django.utils import timezone
@@ -19,17 +17,11 @@ from django.views.decorators.http import require_POST
 from .models import User, Token, Expense, Income, Passwordresetcodes, News
 
 # Create your views here.
-from postmark import PMMail
 
 from .utils import grecaptcha_verify, RateLimited
 
-# create random string for Toekn
-random_str = lambda N: ''.join(
-    random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(N))
-
 
 # login , (API) , returns : JSON = statuns (ok|error) and token
-
 
 
 @csrf_exempt
@@ -69,15 +61,15 @@ def register(request):
     if request.POST.has_key(
             'requestcode'):  # form is filled. if not spam, generate code and save in db, wait for email confirmation, return message
         # is this spam? check reCaptcha
+        context = {'RECAPTCHA_SITE_KEY': settings.RECAPTCHA_SITE_KEY}
         if not grecaptcha_verify(request):  # captcha was not correct
-            context = {
-                'message': 'کپچای گوگل درست وارد نشده بود. شاید ربات هستید؟ کد یا کلیک یا تشخیص عکس زیر فرم را درست پر کنید. ببخشید که فرم به شکل اولیه برنگشته!'}  # TODO: forgot password
+            context['message'] = 'کپچای گوگل درست وارد نشده بود. شاید ربات هستید؟ کد یا کلیک یا تشخیص عکس زیر فرم را درست پر کنید. ببخشید که فرم به شکل اولیه برنگشته!'  # TODO: forgot password
             return render(request, 'register.html', context)
 
         # duplicate email
         if User.objects.filter(email=request.POST['email']).exists():
-            context = {
-                'message': 'متاسفانه این ایمیل قبلا استفاده شده است. در صورتی که این ایمیل شما است، از صفحه ورود گزینه فراموشی پسورد رو انتخاب کنین. ببخشید که فرم ذخیره نشده. درست می شه'}  # TODO: forgot password
+            context[
+                'message'] = 'متاسفانه این ایمیل قبلا استفاده شده است. در صورتی که این ایمیل شما است، از صفحه ورود گزینه فراموشی پسورد رو انتخاب کنین. ببخشید که فرم ذخیره نشده. درست می شه'  # TODO: forgot password
             # TODO: keep the form data
             return render(request, 'register.html', context)
         # if user does not exists
@@ -90,24 +82,23 @@ def register(request):
             temporarycode = Passwordresetcodes(
                 email=email, time=now, code=code, username=username, password=password)
             temporarycode.save()
-            #message = PMMail(api_key=settings.POSTMARK_API_TOKEN,
+            # message = PMMail(api_key=settings.POSTMARK_API_TOKEN,
             #                 subject="فعالسازی اکانت بستون",
             #                 sender="jadi@jadi.net",
             #                 to=email,
             #                 text_body=" برای فعال کردن اکانت بستون خود روی لینک روبرو کلیک کنید: {}?code={}".format(
             #                     request.build_absolute_uri('/accounts/register/'), code),
             #                 tag="account request")
-            #message.send()
+            # message.send()
             message = 'ایمیلی حاوی لینک فعال سازی اکانت به شما فرستاده شده، لطفا پس از چک کردن ایمیل، روی لینک کلیک کنید.'
             message = 'قدیم ها ایمیل فعال سازی می فرستادیم ولی الان شرکتش ما رو تحریم کرده (: پس راحت و بی دردسر'
             body = " برای فعال کردن اکانت بستون خود روی لینک روبرو کلیک کنید: <a href=\"{}?code={}\">لینک رو به رو</a> ".format(request.build_absolute_uri('/accounts/register/'), code)
             message = message + body
             context = {
-                'message': message }
+                'message': message}
             return render(request, 'index.html', context)
         else:
-            context = {
-                'message': 'متاسفانه این نام کاربری قبلا استفاده شده است. از نام کاربری دیگری استفاده کنید. ببخشید که فرم ذخیره نشده. درست می شه'}  # TODO: forgot password
+            context['message'] = 'متاسفانه این نام کاربری قبلا استفاده شده است. از نام کاربری دیگری استفاده کنید. ببخشید که فرم ذخیره نشده. درست می شه'  # TODO: forgot password
             # TODO: keep the form data
             return render(request, 'register.html', context)
     elif request.GET.has_key('code'):  # user clicked on code
@@ -158,9 +149,6 @@ def whoami(request):
 # return General Status of a user as Json (income,expense)
 
 
-
-
-
 @csrf_exempt
 @require_POST
 def query_expenses(request):
@@ -209,7 +197,6 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-
 @csrf_exempt
 @require_POST
 def edit_expense(request):
@@ -220,7 +207,7 @@ def edit_expense(request):
     this_pk = request.POST['id'] if 'id' in request.POST else "-1"
     this_token = request.POST['token'] if 'token' in request.POST else ""
     this_user = get_object_or_404(User, token__token=this_token)
-    
+
     this_expense = get_object_or_404(Expense, pk=this_pk, user=this_user)
     this_expense.text = this_text
     this_expense.amount = this_amount
@@ -229,10 +216,11 @@ def edit_expense(request):
         'status': 'ok',
     }, encoder=JSONEncoder)
 
+
 @csrf_exempt
 @require_POST
 def edit_income(request):
-    """ edit an income """    
+    """ edit an income """
     this_text = request.POST['text'] if 'text' in request.POST else ""
     this_amount = request.POST['amount'] if 'amount' in request.POST else "0"
     this_pk = request.POST['id'] if 'id' in request.POST else "0"
@@ -247,6 +235,7 @@ def edit_income(request):
     return JsonResponse({
         'status': 'ok',
     }, encoder=JSONEncoder)
+
 
 # submit an income to system (api) , input : token(POST) , output : status
 # = (ok)
