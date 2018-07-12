@@ -16,13 +16,7 @@ from django.views.decorators.http import require_POST
 
 from .models import User, Token, Expense, Income, Passwordresetcodes, News
 
-# Create your views here.
-
-from .utils import grecaptcha_verify, RateLimited
-
-
-# login , (API) , returns : JSON = statuns (ok|error) and token
-
+from .utils import grecaptcha_verify
 
 @csrf_exempt
 def news(request):
@@ -45,12 +39,10 @@ def login(request):
             context = {}
             context['result'] = 'ok'
             context['token'] = token
-            # return {'status':'ok','token':'TOKEN'}
             return JsonResponse(context, encoder=JSONEncoder)
         else:
             context = {}
             context['result'] = 'error'
-            # return {'status':'error'}
             return JsonResponse(context, encoder=JSONEncoder)
 
 
@@ -110,7 +102,7 @@ def register(request):
             newuser = User.objects.create(username=new_temp_user.username, password=new_temp_user.password,
                                           email=new_temp_user.email)
             this_token = get_random_string(length=48)
-            token = Token.objects.create(user=newuser, token=this_token)
+            Token.objects.create(user=newuser, token=this_token)
             # delete the temporary activation code from db
             Passwordresetcodes.objects.filter(code=code).delete()
             context = {
