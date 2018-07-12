@@ -77,7 +77,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', 'bestoon'),
-        'USER': os.environ.get('DB_NAME', 'root'),
+        'USER': os.environ.get('DB_USERNAME', 'root'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
         'HOST': os.environ.get('DB_HOST', 'mysql'),
     }
