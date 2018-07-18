@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'ees#cr8y%!0o=%8r2wbxcgcz0u8s!&91=b2f@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'bestoon.jadi.fandogh.cloud']
+ALLOWED_HOSTS = ['localhost', 'bestoon.jadi.fandogh.cloud', 'bestoon-jadi.fandogh.cloud']
 
 # Application definition
 
