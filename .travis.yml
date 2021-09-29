@@ -15,9 +15,9 @@ script:
   - echo $TRAVIS_COMMIT
   - docker login --username=hesam80 --password=sa13801380
   - docker build -t bestoon:latset .
-  - docker run -d -p 8000:8000 bestoon:latest
+  # docker run -d -p 8000:8000 bestoon:latest
   - docker push hesam80/bestoon:latest
-  - fandogh login --username=$FANDOGH_USERNAME  --password=$FANDOGH_PASSWORD
+  - fandogh login --username=hesam80 --password=sa13801380
   - fandogh source run
   - fandogh image publish --version=$TRAVIS_COMMIT || travis_terminate 1
   - fandogh service deploy -p 8000 --version=$TRAVIS_COMMIT --name=bestoon -e RECAPTCHA_SITE_KEY=$RECAPTCHA_SITE_KEY -e RECAPTCHA_SECRET_KEY=$RECAPTCHA_SECRET_KEY -e DB_USERNAME=$DB_USERNAME -e DB_PASSWORD=$DB_PASSWORD -e SECRET_KEY=$SECRET_KEY || travis_terminate 1
