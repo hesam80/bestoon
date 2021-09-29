@@ -9,6 +9,9 @@ python:
 install:
   - pip install fandogh-cli --upgrade
   - pip install docker
+  - pip install virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
 # command to run tests
 script:
   - echo $TRAVIS_COMMIT
