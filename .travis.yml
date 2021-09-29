@@ -9,7 +9,7 @@ python:
 install:
   - pip install fandogh-cli --upgrade
   - pip install docker
-  - pip install virtualenv venv
+  
   # command to run tests
 script:
   - echo $TRAVIS_COMMIT
