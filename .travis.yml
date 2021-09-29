@@ -15,7 +15,7 @@ script:
   - echo $TRAVIS_COMMIT
   - docker login --username=hesam80 --password=sa13801380
   - docker build -t bestoon:latset .
-  - docker tag bestoon:latest hesam80/bestoon:latest
+  - docker run -d -p 8000:8000 bestoon:latest
   - docker push hesam80/bestoon:latest
   - fandogh login --username=$FANDOGH_USERNAME  --password=$FANDOGH_PASSWORD
   - fandogh source run
