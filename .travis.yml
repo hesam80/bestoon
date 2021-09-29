@@ -8,9 +8,11 @@ python:
 # command to install dependencies
 install:
   - pip install fandogh-cli --upgrade
+  - pip install docker
 # command to run tests
 script:
   - echo $TRAVIS_COMMIT
-  - fandogh login --username=$FANDOGH_USERNAME --password=$FANDOGH_PASSWORD
+  - docker login --username=hesam80 --password=sa13801380
+  - fandogh login --username=$FANDOGH_USERNAME  --password=$FANDOGH_PASSWORD
   - fandogh image publish --version=$TRAVIS_COMMIT || travis_terminate 1
   - fandogh service deploy -p 8000 --version=$TRAVIS_COMMIT --name=bestoon  -e SECRET_KEY=$SECRET_KEY || travis_terminate 1
